@@ -1,69 +1,72 @@
-import Image from "next/image";
+import { CatalogClient } from "./catalog-client";
+import { createServerSupabase } from "@/lib/supabase/server";
+import type { Category, Product } from "@/lib/types";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+// Revalidar cada 60 segundos (ISR) para que los cambios del admin se vean rápido
+export const revalidate = 60;
+
+export default async function Home() {
+  let categories: Category[] = [];
+  let products: Product[] = [];
+
+  try {
+    const supabase = await createServerSupabase();
+
+    const { data: cats } = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order");
+
+    const { data: prods } = await supabase
+      .from("products")
+      .select("*, categories(*)")
+      .order("featured", { ascending: false })
+      .order("sort_order")
+      .order("created_at", { ascending: false });
+
+    categories = (cats as Category[]) || [];
+    products = (prods as Product[]) || [];
+  } catch {
+    // Sin Supabase configurado: usar datos demo
+    categories = DEMO_CATEGORIES;
+    products = DEMO_PRODUCTS;
+  }
+
+  // Si no hay datos de Supabase (no configurado todavía), cargar demo
+  if (categories.length === 0 && products.length === 0) {
+    categories = DEMO_CATEGORIES;
+    products = DEMO_PRODUCTS;
+  }
+
+  return <CatalogClient categories={categories} products={products} />;
 }
+
+// ============ Datos demo para desarrollo sin Supabase ============
+const DEMO_CATEGORIES: Category[] = [
+  { id: "cat-1", name: "Cemento y Cal", sort_order: 1 },
+  { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 },
+  { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 },
+  { id: "cat-4", name: "Áridos", sort_order: 4 },
+  { id: "cat-5", name: "Maderas", sort_order: 5 },
+  { id: "cat-6", name: "Herramientas", sort_order: 6 },
+  { id: "cat-7", name: "Pisos y Revestimientos", sort_order: 7 },
+  { id: "cat-8", name: "Electricidad", sort_order: 8 },
+];
+
+const DEMO_PRODUCTS: Product[] = [
+  { id: "p1", name: "Cemento Holcim Fuerte x 25kg (ECOPlanet)", price: 6732, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
+  { id: "p2", name: "Hercal Holcim Maestro x 25kg", price: 5655, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
+  { id: "p3", name: "Cal Hidratada x 25kg", price: 4480, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
+  { id: "p4", name: "Hierro Construcción 6mm — Barra x 12m", price: 6003, unit: "barra", category_id: "cat-2", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 } },
+  { id: "p5", name: "Malla Sima 15x25 Ø5mm 2,40 x 3,00m", price: 34666, unit: "panel", category_id: "cat-2", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 } },
+  { id: "p6", name: "Ladrillo Cerámico Hueco 8x18x33", price: 675, unit: "unidad", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
+  { id: "p7", name: "Ladrillo Cerámico Hueco 12x18x33", price: 820, unit: "unidad", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
+  { id: "p8", name: "Adoquín Holanda 20x10x6 — x m²", price: 24975, unit: "m²", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
+  { id: "p9", name: "Arena Gruesa — Bolsón 1m³", price: 37647, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
+  { id: "p10", name: "Arena Fina — Bolsón 1m³", price: 41200, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
+  { id: "p11", name: "Piedra Partida 6-20 — Bolsón 1m³", price: 45900, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: false, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
+  { id: "p12", name: "Viga Laminada Eucaliptus 3\" x 8\" — x metro", price: 20107, unit: "metro", category_id: "cat-5", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-5", name: "Maderas", sort_order: 5 } },
+  { id: "p13", name: "Hormigonera 130lts Motor 1HP Weg", price: 562817, unit: "unidad", category_id: "cat-6", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-6", name: "Herramientas", sort_order: 6 } },
+  { id: "p14", name: "Piso Flotante SPC Click Gris AC4 2,20m² x caja", price: 96575, unit: "caja", category_id: "cat-7", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-7", name: "Pisos y Revestimientos", sort_order: 7 } },
+  { id: "p15", name: "Pilar de Luz Monofásico Simple Pesado c/Caja", price: 181895, unit: "unidad", category_id: "cat-8", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-8", name: "Electricidad", sort_order: 8 } },
+];

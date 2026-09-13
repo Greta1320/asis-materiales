@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Asís Materiales — Catálogo Web + Admin + WhatsApp
 
-## Getting Started
+Sitio web para corralón de materiales de construcción.  
+El dueño carga productos con foto y precio desde un panel admin, y los clientes arman pedidos que se envían por WhatsApp.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 16** (App Router + TypeScript)
+- **Supabase** (base de datos, auth, storage de fotos)
+- **Tailwind CSS v4**
+- **Lucide React** (iconos)
+
+## Setup rápido
+
+### 1. Crear proyecto en Supabase (gratis)
+
+1. Ir a [supabase.com](https://supabase.com) → New Project
+2. Copiar la **URL** y la **anon key** (Settings → API)
+3. Ir a **SQL Editor** y pegar el contenido de `supabase-schema.sql` → Run
+4. Ir a **Authentication → Users** → crear un usuario admin (email + contraseña)
+
+### 2. Configurar las variables de entorno
+
+Editar `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
+NEXT_PUBLIC_WSP_NUMBER=549XXXXXXXXXX
+NEXT_PUBLIC_STORE_NAME=Asís Materiales
+NEXT_PUBLIC_STORE_TAGLINE=Corralón & Construcción
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Instalar y correr
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abrir http://localhost:3000
 
-## Learn More
+### 4. Deploy en Vercel (gratis)
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+O conectar el repo de GitHub en [vercel.com](https://vercel.com) → Import → configurar las env vars.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estructura
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── page.tsx              # Catálogo público (SSR + datos demo)
+│   ├── catalog-client.tsx    # Catálogo interactivo (cliente)
+│   ├── login/page.tsx        # Login del admin
+│   ├── admin/
+│   │   ├── layout.tsx        # Layout del admin (sidebar + navbar mobile)
+│   │   ├── page.tsx          # CRUD de productos (crear, editar, eliminar, fotos)
+│   │   └── categories/       # CRUD de categorías
+│   ├── layout.tsx            # Layout raíz (fonts + CartProvider)
+│   └── globals.css           # Tokens de color + dark mode
+├── components/
+│   ├── header.tsx            # Header con buscador y carrito
+│   ├── footer.tsx            # Footer con contacto
+│   ├── product-card.tsx      # Tarjeta de producto
+│   ├── category-chips.tsx    # Filtros de categoría
+│   ├── cart-drawer.tsx       # Carrito lateral → WhatsApp
+│   └── whatsapp-fab.tsx      # Botón flotante WhatsApp
+├── lib/
+│   ├── supabase/             # Clientes Supabase (browser, server, middleware)
+│   ├── cart.tsx              # Estado del carrito (Context + localStorage)
+│   ├── whatsapp.ts           # Generador de mensajes WhatsApp
+│   ├── config.ts             # Config del negocio
+│   └── types.ts              # TypeScript interfaces
+└── middleware.ts              # Protección de rutas /admin
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Funcionalidades
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Público (clientes)
+- ✅ Catálogo con fotos, precios y categorías
+- ✅ Búsqueda de productos
+- ✅ Filtro por categoría
+- ✅ Carrito de pedidos → envío por WhatsApp
+- ✅ Consulta de disponibilidad por WhatsApp
+- ✅ Responsive (mobile + desktop)
+- ✅ Dark mode automático
+
+### Admin (dueño del corralón)
+- ✅ Login protegido
+- ✅ Crear / editar / eliminar productos
+- ✅ Subir fotos desde el celular
+- ✅ Marcar stock / sin stock
+- ✅ Marcar productos destacados
+- ✅ Crear / editar / eliminar categorías
+
+### Próximos pasos (Fase 2)
+- 🔲 Chatbot en la web que responda consultas en vivo
+- 🔲 Importar productos por CSV
+- 🔲 Notificaciones de pedidos
+- 🔲 Analytics de productos más consultados
