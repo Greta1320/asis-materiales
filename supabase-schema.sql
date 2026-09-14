@@ -87,7 +87,99 @@ create policy "Admin puede borrar fotos"
     bucket_id = 'products' and auth.role() = 'authenticated'
   );
 
--- 7. Datos iniciales de categorías (las del catálogo actual)
+-- 7. Tabla de clientes (CRM por WhatsApp)
+create table public.clients (
+  id uuid default gen_random_uuid() primary key,
+  phone text not null unique,
+  name text,
+  localidad text,
+  created_at timestamptz default now()
+);
+
+-- 8. Tabla de pedidos
+create table public.orders (
+  id uuid default gen_random_uuid() primary key,
+  client_id uuid references public.clients(id) on delete set null,
+  items jsonb not null default '[]',
+  total numeric(12,2) not null default 0,
+  status text not null default 'enviado',
+  created_at timestamptz default now()
+);
+
+-- 9. Tabla de alertas (stock, promos, precios)
+create table public.alerts (
+  id uuid default gen_random_uuid() primary key,
+  client_id uuid references public.clients(id) on delete cascade,
+  type text not null check (type in ('stock', 'promo', 'price')),
+  product_id uuid references public.products(id) on delete cascade,
+  message text,
+  notified boolean default false,
+  created_at timestamptz default now()
+);
+
+-- 10. Tabla de promociones
+create table public.promos (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  message text not null,
+  active boolean default true,
+  created_at timestamptz default now()
+);
+
+-- Índices CRM
+create index idx_clients_phone on public.clients(phone);
+create index idx_orders_client on public.orders(client_id);
+create index idx_alerts_client on public.alerts(client_id);
+create index idx_alerts_product on public.alerts(product_id);
+create index idx_alerts_pending on public.alerts(notified) where notified = false;
+
+-- RLS para tablas CRM
+alter table public.clients enable row level security;
+alter table public.orders enable row level security;
+alter table public.alerts enable row level security;
+alter table public.promos enable row level security;
+
+-- Clientes: público puede registrarse, admin puede ver todo
+create policy "Público puede registrar cliente"
+  on public.clients for insert with check (true);
+create policy "Público puede ver su propio perfil"
+  on public.clients for select using (true);
+create policy "Admin puede actualizar clientes"
+  on public.clients for update using (auth.role() = 'authenticated');
+create policy "Admin puede borrar clientes"
+  on public.clients for delete using (auth.role() = 'authenticated');
+
+-- Pedidos: público puede crear, admin puede ver/modificar
+create policy "Público puede crear pedidos"
+  on public.orders for insert with check (true);
+create policy "Público puede ver pedidos"
+  on public.orders for select using (true);
+create policy "Admin puede actualizar pedidos"
+  on public.orders for update using (auth.role() = 'authenticated');
+create policy "Admin puede borrar pedidos"
+  on public.orders for delete using (auth.role() = 'authenticated');
+
+-- Alertas: público puede crear/ver, admin puede modificar
+create policy "Público puede crear alertas"
+  on public.alerts for insert with check (true);
+create policy "Público puede ver alertas"
+  on public.alerts for select using (true);
+create policy "Admin puede actualizar alertas"
+  on public.alerts for update using (auth.role() = 'authenticated');
+create policy "Admin puede borrar alertas"
+  on public.alerts for delete using (auth.role() = 'authenticated');
+
+-- Promos: público puede ver activas, admin puede todo
+create policy "Público puede ver promos"
+  on public.promos for select using (true);
+create policy "Admin puede insertar promos"
+  on public.promos for insert with check (auth.role() = 'authenticated');
+create policy "Admin puede actualizar promos"
+  on public.promos for update using (auth.role() = 'authenticated');
+create policy "Admin puede borrar promos"
+  on public.promos for delete using (auth.role() = 'authenticated');
+
+-- 11. Datos iniciales de categorías (las del catálogo actual)
 insert into public.categories (name, sort_order) values
   ('Cemento y Cal', 1),
   ('Cerámicos', 2),

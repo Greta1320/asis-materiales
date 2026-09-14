@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/config";
 import { buildWhatsAppURL } from "@/lib/whatsapp";
+import { createClient } from "@/lib/supabase/client";
 
 interface CartDrawerProps {
   open: boolean;
@@ -99,6 +100,34 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 href={wspURL}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  try {
+                    const clientRaw = localStorage.getItem("asis_client");
+                    const clientData = clientRaw ? JSON.parse(clientRaw) : null;
+                    const supabase = createClient();
+                    const orderItems = items.map(({ product, qty }) => ({
+                      product_id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      unit: product.unit,
+                      qty,
+                    }));
+                    const orderPayload: Record<string, unknown> = {
+                      items: orderItems,
+                      total,
+                      status: "enviado",
+                    };
+                    if (clientData?.phone) {
+                      supabase.from("clients").select("id").eq("phone", clientData.phone).single()
+                        .then(({ data }) => {
+                          if (data?.id) orderPayload.client_id = data.id;
+                          supabase.from("orders").insert(orderPayload).then(() => {});
+                        });
+                    } else {
+                      supabase.from("orders").insert(orderPayload).then(() => {});
+                    }
+                  } catch {}
+                }}
                 className="w-full flex items-center justify-center gap-2 rounded-xl text-white font-bold text-base py-3.5 no-underline transition-all hover:brightness-110"
                 style={{ background: "var(--color-wsp)" }}
               >

@@ -41,6 +41,7 @@ export const metadata: Metadata = {
     siteName: "Asís Materiales",
     title: "Asís Materiales — Ferretería y Corralón en San Francisco del Monte de Oro",
     description: "Materiales para la construcción, ferretería y corralón. Cemento, hierro, ladrillos, áridos, pinturas, herramientas. Pedí por WhatsApp.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Asís Materiales — Ferretería y Corralón" }],
   },
   alternates: {
     canonical: "https://asismateriales.com",
