@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: "Materiales para la construcción, ferretería y corralón. Cemento, hierro, ladrillos, áridos, pinturas, herramientas. Pedí por WhatsApp.",
   },
   alternates: {
-    canonical: "https://asismateriales.com.ar",
+    canonical: "https://asismateriales.com",
   },
 };
 
@@ -52,9 +52,9 @@ const jsonLd = {
   "@type": "HardwareStore",
   name: "Asís Materiales",
   description: "Ferretería y corralón de materiales para la construcción en San Francisco del Monte de Oro, San Luis.",
-  url: "https://asismateriales.com.ar",
+  url: "https://asismateriales.com",
   telephone: "+54-2664-369625",
-  image: "https://asismateriales.com.ar/og-image.jpg",
+  image: "https://asismateriales.com/og-image.jpg",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Centenario s/n",
