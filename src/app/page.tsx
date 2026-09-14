@@ -32,8 +32,8 @@ export default async function Home() {
     products = DEMO_PRODUCTS;
   }
 
-  // Si no hay datos de Supabase (no configurado todavía), cargar demo
-  if (categories.length === 0 && products.length === 0) {
+  // Si no hay productos en Supabase, cargar datos demo completos
+  if (products.length === 0) {
     categories = DEMO_CATEGORIES;
     products = DEMO_PRODUCTS;
   }
