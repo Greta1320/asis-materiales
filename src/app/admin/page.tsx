@@ -140,7 +140,7 @@ export default function AdminProducts() {
         <button
           onClick={openNew}
           className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold border-0 text-white"
-          style={{ background: "var(--color-wsp)" }}
+          style={{ background: "var(--color-accent)" }}
         >
           <Plus className="w-4 h-4" /> Nuevo producto
         </button>
@@ -212,8 +212,8 @@ export default function AdminProducts() {
                       <span
                         className="text-xs font-semibold px-2 py-0.5 rounded-full"
                         style={{
-                          background: p.in_stock ? "var(--color-amber-soft)" : "rgba(220,50,50,.12)",
-                          color: p.in_stock ? "var(--color-amber)" : "#dc3232",
+                          background: p.in_stock ? "var(--color-accent-soft)" : "rgba(220,50,50,.12)",
+                          color: p.in_stock ? "var(--color-accent)" : "#dc3232",
                         }}
                       >
                         {p.in_stock ? "En stock" : "Sin stock"}

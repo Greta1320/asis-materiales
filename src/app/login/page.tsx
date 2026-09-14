@@ -45,13 +45,15 @@ export default function LoginPage() {
         <div className="text-center mb-6">
           <span
             className="inline-flex w-14 h-14 rounded-xl mb-3 items-center justify-center"
-            style={{ background: "var(--color-amber)" }}
+            style={{ background: "var(--color-navy)" }}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="#23211d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
               <path d="M3 21h18" /><path d="M5 21V10l7-5 7 5v11" /><path d="M9 21v-6h6v6" />
             </svg>
           </span>
-          <h1 className="font-display font-bold text-xl uppercase tracking-wide">{STORE.name}</h1>
+          <h1 className="font-display font-bold text-xl uppercase tracking-wide">
+            <span style={{ color: "var(--color-accent)" }}>Asís</span> Materiales
+          </h1>
           <p className="text-sm mt-1" style={{ color: "var(--color-ink-soft)" }}>Panel de administración</p>
         </div>
 
@@ -65,7 +67,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="rounded-xl px-3 py-3 text-sm border outline-none transition-colors focus:border-[var(--color-amber)]"
+              className="rounded-xl px-3 py-3 text-sm border outline-none transition-colors focus:border-[var(--color-accent)]"
               style={{ background: "var(--color-surface-2)", borderColor: "var(--color-line)", color: "var(--color-ink)" }}
               placeholder="admin@asismateriales.com"
             />
@@ -79,7 +81,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="rounded-xl px-3 py-3 text-sm border outline-none transition-colors focus:border-[var(--color-amber)]"
+              className="rounded-xl px-3 py-3 text-sm border outline-none transition-colors focus:border-[var(--color-accent)]"
               style={{ background: "var(--color-surface-2)", borderColor: "var(--color-line)", color: "var(--color-ink)" }}
               placeholder="••••••••"
             />

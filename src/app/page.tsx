@@ -41,32 +41,47 @@ export default async function Home() {
   return <CatalogClient categories={categories} products={products} />;
 }
 
-// ============ Datos demo para desarrollo sin Supabase ============
+// ============ Datos demo — productos reales de Asís Materiales ============
 const DEMO_CATEGORIES: Category[] = [
   { id: "cat-1", name: "Cemento y Cal", sort_order: 1 },
-  { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 },
-  { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 },
-  { id: "cat-4", name: "Áridos", sort_order: 4 },
-  { id: "cat-5", name: "Maderas", sort_order: 5 },
-  { id: "cat-6", name: "Herramientas", sort_order: 6 },
-  { id: "cat-7", name: "Pisos y Revestimientos", sort_order: 7 },
-  { id: "cat-8", name: "Electricidad", sort_order: 8 },
+  { id: "cat-2", name: "Cerámicos", sort_order: 2 },
+  { id: "cat-3", name: "Hierros y Alambres", sort_order: 3 },
+  { id: "cat-4", name: "Bloques de Cemento", sort_order: 4 },
+  { id: "cat-5", name: "Pegamentos y Revoques", sort_order: 5 },
+  { id: "cat-6", name: "Aislantes y Techos", sort_order: 6 },
+  { id: "cat-7", name: "Estructuras", sort_order: 7 },
 ];
 
+const p = (id: string, name: string, price: number, unit: string, catId: string, catName: string, img: string, featured = false, inStock = true): Product => ({
+  id, name, price, unit, category_id: catId, image_url: `/products/${img}`, in_stock: inStock, featured, sort_order: 0, created_at: "", updated_at: "",
+  categories: { id: catId, name: catName, sort_order: 0 },
+});
+
 const DEMO_PRODUCTS: Product[] = [
-  { id: "p1", name: "Cemento Holcim Fuerte x 25kg (ECOPlanet)", price: 6732, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
-  { id: "p2", name: "Hercal Holcim Maestro x 25kg", price: 5655, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
-  { id: "p3", name: "Cal Hidratada x 25kg", price: 4480, unit: "bolsa", category_id: "cat-1", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-1", name: "Cemento y Cal", sort_order: 1 } },
-  { id: "p4", name: "Hierro Construcción 6mm — Barra x 12m", price: 6003, unit: "barra", category_id: "cat-2", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 } },
-  { id: "p5", name: "Malla Sima 15x25 Ø5mm 2,40 x 3,00m", price: 34666, unit: "panel", category_id: "cat-2", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-2", name: "Hierros y Mallas", sort_order: 2 } },
-  { id: "p6", name: "Ladrillo Cerámico Hueco 8x18x33", price: 675, unit: "unidad", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
-  { id: "p7", name: "Ladrillo Cerámico Hueco 12x18x33", price: 820, unit: "unidad", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
-  { id: "p8", name: "Adoquín Holanda 20x10x6 — x m²", price: 24975, unit: "m²", category_id: "cat-3", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-3", name: "Ladrillos y Bloques", sort_order: 3 } },
-  { id: "p9", name: "Arena Gruesa — Bolsón 1m³", price: 37647, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
-  { id: "p10", name: "Arena Fina — Bolsón 1m³", price: 41200, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
-  { id: "p11", name: "Piedra Partida 6-20 — Bolsón 1m³", price: 45900, unit: "bolsón", category_id: "cat-4", image_url: null, in_stock: false, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-4", name: "Áridos", sort_order: 4 } },
-  { id: "p12", name: "Viga Laminada Eucaliptus 3\" x 8\" — x metro", price: 20107, unit: "metro", category_id: "cat-5", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-5", name: "Maderas", sort_order: 5 } },
-  { id: "p13", name: "Hormigonera 130lts Motor 1HP Weg", price: 562817, unit: "unidad", category_id: "cat-6", image_url: null, in_stock: true, featured: true, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-6", name: "Herramientas", sort_order: 6 } },
-  { id: "p14", name: "Piso Flotante SPC Click Gris AC4 2,20m² x caja", price: 96575, unit: "caja", category_id: "cat-7", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-7", name: "Pisos y Revestimientos", sort_order: 7 } },
-  { id: "p15", name: "Pilar de Luz Monofásico Simple Pesado c/Caja", price: 181895, unit: "unidad", category_id: "cat-8", image_url: null, in_stock: true, featured: false, sort_order: 0, created_at: "", updated_at: "", categories: { id: "cat-8", name: "Electricidad", sort_order: 8 } },
+  // Cemento y Cal
+  p("p1", "Cemento Portland CPC40 x 25kg — Avellaneda", 6732, "bolsa", "cat-1", "Cemento y Cal", "cemento-avellaneda-cpc40-25kg.jpg", true),
+  p("p2", "Hidralit Cemento de Albañilería x 25kg", 5655, "bolsa", "cat-1", "Cemento y Cal", "hidralit-albanileria-25kg.jpg"),
+  p("p3", "Cal Hidrat Extra x 25kg — Avellaneda", 4480, "bolsa", "cat-1", "Cemento y Cal", "cal-hidrat-extra-25kg.jpg"),
+  // Cerámicos
+  p("p4", "Cerámico Cerramiento 18x18x33", 675, "unidad", "cat-2", "Cerámicos", "ceramico-cerramiento-18x18x33.jpg", true),
+  p("p5", "Cerámico Cerramiento 12x18x33", 580, "unidad", "cat-2", "Cerámicos", "ceramico-cerramiento-12x18x33.jpg"),
+  p("p6", "Cerámico Cerramiento 8x18x33", 480, "unidad", "cat-2", "Cerámicos", "ceramico-cerramiento-8x18x33.jpg"),
+  p("p7", "Cerámico Doble Muro Termoeficiente 18x18x33", 850, "unidad", "cat-2", "Cerámicos", "ceramico-doble-muro-18x18x33.jpg"),
+  p("p8", "Cerámico Portante 18x19x33", 920, "unidad", "cat-2", "Cerámicos", "ceramico-portante-18x19x33.jpg"),
+  p("p9", "Cerámico Portante 12x19x33", 780, "unidad", "cat-2", "Cerámicos", "ceramico-portante-12x19x33.jpg"),
+  p("p10", "Ladrillo Visto", 350, "unidad", "cat-2", "Cerámicos", "ladrillo-visto.jpg"),
+  // Hierros y Alambres
+  p("p11", "Hierro de Construcción — Barra x 12m", 6003, "barra", "cat-3", "Hierros y Alambres", "hierro-construccion.jpg", true),
+  p("p12", "Alambre de Atar y Encofrar", 4200, "kg", "cat-3", "Hierros y Alambres", "alambre-atar-encofrar.jpg"),
+  p("p13", "Alambre Galvanizado", 5100, "kg", "cat-3", "Hierros y Alambres", "alambre-galvanizado.jpg"),
+  // Bloques de Cemento
+  p("p14", "Block P-15", 420, "unidad", "cat-4", "Bloques de Cemento", "block-p15.jpg"),
+  p("p15", "Bloque Liso 19x19x39 Tabique", 550, "unidad", "cat-4", "Bloques de Cemento", "bloque-liso-19x19x39.jpg"),
+  // Pegamentos y Revoques
+  p("p16", "Pegamento Cerámico Mapei Keraflor Plus x 25kg", 12500, "bolsa", "cat-5", "Pegamentos y Revoques", "pegamento-ceramico-mapei-25kg.jpg"),
+  p("p17", "Revoque Fino Mapei Planitop x 20kg", 9800, "bolsa", "cat-5", "Pegamentos y Revoques", "revoque-fino-mapei-20kg.jpg"),
+  // Aislantes y Techos
+  p("p18", "Aislante Espuma Aluminizado 10mm x 20mts", 45900, "rollo", "cat-6", "Aislantes y Techos", "aislante-espuma-aluminizado.jpg"),
+  // Estructuras
+  p("p19", "Vigueta Pretensada (2.00 a 6.00 mts)", 15800, "metro", "cat-7", "Estructuras", "vigueta-pretensada.jpg"),
 ];

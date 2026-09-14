@@ -1,19 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #efece6;
+  /* === PALETA ASÍS MATERIALES === */
+  /* Extraída del logo: azul marino + naranja ladrillo */
+  --color-bg: #f0f2f5;
   --color-surface: #ffffff;
-  --color-surface-2: #f6f4f0;
-  --color-ink: #23211d;
-  --color-ink-soft: #6d675e;
-  --color-line: #ded9d0;
-  --color-line-strong: #c9c2b6;
-  --color-brand: #242830;
+  --color-surface-2: #f7f8fa;
+  --color-ink: #0c1a3a;
+  --color-ink-soft: #5a6680;
+  --color-line: #d8dde6;
+  --color-line-strong: #bec5d1;
+
+  --color-navy: #0c2461;         /* azul marino del logo */
+  --color-navy-light: #1a3a8a;
+  --color-navy-surface: #0e2a6e;
+
+  --color-brand: #0c2461;        /* navy = color primario */
   --color-brand-ink: #ffffff;
-  --color-amber: #e8930c;
-  --color-amber-soft: #fff2d9;
+  --color-accent: #f58220;       /* naranja ladrillo del logo */
+  --color-accent-soft: #fef0dc;
+  --color-accent-hover: #e0710a;
+
   --color-wsp: #1fa855;
   --color-wsp-hover: #128c46;
+
+  --shadow-sm: 0 1px 2px rgba(12,36,97,.04), 0 4px 12px rgba(12,36,97,.06);
+  --shadow-md: 0 2px 4px rgba(12,36,97,.05), 0 10px 28px rgba(12,36,97,.09);
+  --shadow-lg: 0 4px 8px rgba(12,36,97,.06), 0 20px 48px rgba(12,36,97,.12);
 }
 
 @theme inline {
@@ -25,36 +38,58 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg: #16181c;
-    --color-surface: #1e2127;
-    --color-surface-2: #23272e;
-    --color-ink: #eef0f2;
-    --color-ink-soft: #a2a8b0;
-    --color-line: #2c313a;
-    --color-line-strong: #3a414c;
-    --color-brand: #eef0f2;
-    --color-brand-ink: #16181c;
-    --color-amber: #f2a83a;
-    --color-amber-soft: #332818;
+    --color-bg: #0a0e18;
+    --color-surface: #111827;
+    --color-surface-2: #1a2236;
+    --color-ink: #e8ecf2;
+    --color-ink-soft: #8a96aa;
+    --color-line: #1f2d48;
+    --color-line-strong: #2c3e5e;
+
+    --color-navy: #2a5ac8;
+    --color-navy-light: #3a6ed8;
+    --color-navy-surface: #0e1a36;
+
+    --color-brand: #e8ecf2;
+    --color-brand-ink: #0a0e18;
+    --color-accent: #f5922e;
+    --color-accent-soft: #2a1c0a;
+    --color-accent-hover: #ffa042;
+
     --color-wsp: #2bbd63;
     --color-wsp-hover: #1fa855;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.25);
+    --shadow-md: 0 2px 4px rgba(0,0,0,.25), 0 10px 28px rgba(0,0,0,.3);
+    --shadow-lg: 0 4px 8px rgba(0,0,0,.3), 0 20px 48px rgba(0,0,0,.4);
   }
 }
 
 [data-theme="dark"] {
-  --color-bg: #16181c;
-  --color-surface: #1e2127;
-  --color-surface-2: #23272e;
-  --color-ink: #eef0f2;
-  --color-ink-soft: #a2a8b0;
-  --color-line: #2c313a;
-  --color-line-strong: #3a414c;
-  --color-brand: #eef0f2;
-  --color-brand-ink: #16181c;
-  --color-amber: #f2a83a;
-  --color-amber-soft: #332818;
+  --color-bg: #0a0e18;
+  --color-surface: #111827;
+  --color-surface-2: #1a2236;
+  --color-ink: #e8ecf2;
+  --color-ink-soft: #8a96aa;
+  --color-line: #1f2d48;
+  --color-line-strong: #2c3e5e;
+  --color-navy: #2a5ac8;
+  --color-navy-light: #3a6ed8;
+  --color-navy-surface: #0e1a36;
+  --color-brand: #e8ecf2;
+  --color-brand-ink: #0a0e18;
+  --color-accent: #f5922e;
+  --color-accent-soft: #2a1c0a;
+  --color-accent-hover: #ffa042;
   --color-wsp: #2bbd63;
   --color-wsp-hover: #1fa855;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.25);
+  --shadow-md: 0 2px 4px rgba(0,0,0,.25), 0 10px 28px rgba(0,0,0,.3);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,.3), 0 20px 48px rgba(0,0,0,.4);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -62,6 +97,11 @@ body {
   background: var(--color-bg);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }

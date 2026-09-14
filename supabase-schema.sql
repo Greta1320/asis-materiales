@@ -87,17 +87,12 @@ create policy "Admin puede borrar fotos"
     bucket_id = 'products' and auth.role() = 'authenticated'
   );
 
--- 7. Datos iniciales de categorías (las típicas de un corralón)
+-- 7. Datos iniciales de categorías (las del catálogo actual)
 insert into public.categories (name, sort_order) values
   ('Cemento y Cal', 1),
-  ('Hierros y Mallas', 2),
-  ('Ladrillos y Bloques', 3),
-  ('Áridos', 4),
-  ('Maderas', 5),
-  ('Electricidad', 6),
-  ('Plomería', 7),
-  ('Herramientas', 8),
-  ('Pisos y Revestimientos', 9),
-  ('Pinturas', 10),
-  ('Ferretería General', 11),
-  ('Aberturas', 12);
+  ('Cerámicos', 2),
+  ('Hierros y Alambres', 3),
+  ('Bloques de Cemento', 4),
+  ('Pegamentos y Revoques', 5),
+  ('Aislantes y Techos', 6),
+  ('Estructuras', 7);
