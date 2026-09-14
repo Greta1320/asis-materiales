@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Package, Tag, LogOut, Home, Users, Megaphone } from "lucide-react";
+import { Package, Tag, LogOut, Home, Users, Megaphone, BarChart3, Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { STORE } from "@/lib/config";
 
@@ -63,6 +63,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <Megaphone className="w-4.5 h-4.5" /> Promos
           </Link>
+          <Link
+            href="/admin/analytics"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,.85)" }}
+          >
+            <BarChart3 className="w-4.5 h-4.5" /> Analytics
+          </Link>
+          <Link
+            href="/admin/seo"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,.85)" }}
+          >
+            <Search className="w-4.5 h-4.5" /> SEO
+          </Link>
         </nav>
 
         <div className="p-2 border-t flex flex-col gap-1" style={{ borderColor: "rgba(255,255,255,.1)" }}>
@@ -99,6 +113,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Link>
         <Link href="/admin/promos" className="flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
           <Megaphone className="w-5 h-5" /> Promos
+        </Link>
+        <Link href="/admin/analytics" className="flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
+          <BarChart3 className="w-5 h-5" /> Analytics
+        </Link>
+        <Link href="/admin/seo" className="flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
+          <Search className="w-5 h-5" /> SEO
         </Link>
         <button onClick={handleLogout} className="flex flex-col items-center text-xs gap-1 bg-transparent border-0" style={{ color: "rgba(255,255,255,.5)" }}>
           <LogOut className="w-5 h-5" /> Salir

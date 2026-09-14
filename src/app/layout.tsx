@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow, Barlow_Semi_Condensed } from "next/font/google";
 import { CartProvider } from "@/lib/cart";
+import { PageTracker } from "@/components/page-tracker";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -117,7 +118,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-screen flex flex-col">
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <PageTracker />
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
