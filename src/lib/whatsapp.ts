@@ -30,7 +30,7 @@ export function buildInquiryURL(productName: string): string {
   return `https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
-export function buildGeneralURL(): string {
-  const msg = `¡Hola *${STORE_NAME}*! Quiero hacer una consulta.`;
+export function buildGeneralURL(customMsg?: string): string {
+  const msg = customMsg || `¡Hola *${STORE_NAME}*! Quiero hacer una consulta.`;
   return `https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
