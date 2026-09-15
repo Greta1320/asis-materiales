@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { STORE } from "@/lib/config";
+import { LogoIcon } from "@/components/logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -43,13 +44,8 @@ export default function LoginPage() {
         }}
       >
         <div className="text-center mb-6">
-          <span
-            className="inline-flex w-14 h-14 rounded-xl mb-3 items-center justify-center"
-            style={{ background: "var(--color-navy)" }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-              <path d="M3 21h18" /><path d="M5 21V10l7-5 7 5v11" /><path d="M9 21v-6h6v6" />
-            </svg>
+          <span className="inline-block mb-3">
+            <LogoIcon size={56} />
           </span>
           <h1 className="font-display font-bold text-xl uppercase tracking-wide">
             <span style={{ color: "var(--color-accent)" }}>Asís</span> Materiales
