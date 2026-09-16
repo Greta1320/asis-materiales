@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Image as ImageIcon, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon, Search, Check, X } from "lucide-react";
 import NextImage from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/config";
@@ -28,6 +28,8 @@ export default function AdminProducts() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+  const [priceValue, setPriceValue] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -123,6 +125,14 @@ export default function AdminProducts() {
     reader.readAsDataURL(f);
   }
 
+  async function saveInlinePrice(id: string) {
+    const num = parseFloat(priceValue);
+    if (isNaN(num) || num <= 0) { setEditingPrice(null); return; }
+    await supabase.from("products").update({ price: num }).eq("id", id);
+    setProducts((prev) => prev.map((p) => p.id === id ? { ...p, price: num } : p));
+    setEditingPrice(null);
+  }
+
   const filtered = search
     ? products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
     : products;
@@ -203,7 +213,48 @@ export default function AdminProducts() {
                       </div>
                     </td>
                     <td className="px-4 py-3 tabular-nums font-semibold whitespace-nowrap">
-                      {formatPrice(p.price)}<span className="font-normal text-xs ml-1" style={{ color: "var(--color-ink-soft)" }}>/{p.unit}</span>
+                      {editingPrice === p.id ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs" style={{ color: "var(--color-ink-soft)" }}>$</span>
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            value={priceValue}
+                            onChange={(e) => setPriceValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveInlinePrice(p.id);
+                              if (e.key === "Escape") setEditingPrice(null);
+                            }}
+                            autoFocus
+                            className="w-20 rounded-lg px-2 py-1 text-sm border outline-none tabular-nums"
+                            style={{ background: "var(--color-surface-2)", borderColor: "var(--color-accent)", color: "var(--color-ink)" }}
+                          />
+                          <button
+                            onClick={() => saveInlinePrice(p.id)}
+                            className="w-6 h-6 rounded grid place-items-center border-0"
+                            style={{ background: "rgba(34,197,94,.15)", color: "#22c55e" }}
+                            title="Guardar"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setEditingPrice(null)}
+                            className="w-6 h-6 rounded grid place-items-center border-0"
+                            style={{ background: "rgba(239,68,68,.1)", color: "#ef4444" }}
+                            title="Cancelar"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span
+                          className="cursor-pointer rounded-lg px-2 py-1 -mx-2 transition-colors hover:bg-[var(--color-surface-2)]"
+                          onClick={() => { setEditingPrice(p.id); setPriceValue(String(p.price)); }}
+                          title="Click para editar precio"
+                        >
+                          {formatPrice(p.price)}<span className="font-normal text-xs ml-1" style={{ color: "var(--color-ink-soft)" }}>/{p.unit}</span>
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell" style={{ color: "var(--color-ink-soft)" }}>
                       {p.categories?.name || "—"}
