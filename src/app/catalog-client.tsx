@@ -53,14 +53,14 @@ export function CatalogClient({ categories, products }: Props) {
       <section style={{ background: "var(--color-navy)" }}>
         <div className="mx-auto max-w-7xl grid lg:grid-cols-[1fr_auto] items-center gap-8 px-4 py-10 sm:py-12">
           <div>
-            <div className="mb-5">
+            <div className="mb-6">
               <Image
                 src="/logo-full.png"
                 alt="Asís Materiales"
-                width={320}
-                height={100}
+                width={480}
+                height={160}
                 className="w-auto"
-                style={{ maxHeight: 90, objectFit: "contain" }}
+                style={{ maxHeight: 140, objectFit: "contain" }}
                 priority
               />
             </div>
