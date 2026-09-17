@@ -37,14 +37,8 @@ export function Header({ onOpenCart, search, onSearch }: HeaderProps) {
       <div className="border-b" style={{ borderColor: "var(--color-line)" }}>
         <div className="mx-auto max-w-7xl flex items-center gap-4 px-4 py-3 flex-wrap">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 no-underline shrink-0">
+          <Link href="/" className="flex items-center no-underline shrink-0">
             <LogoIcon size={42} />
-            <span className="font-display font-extrabold leading-none uppercase tracking-wide">
-              <span className="text-[22px]" style={{ color: "var(--color-accent)" }}>Asís</span>
-              <span className="block text-[12px] font-bold tracking-[.2em]" style={{ color: "var(--color-ink-soft)" }}>
-                Materiales
-              </span>
-            </span>
           </Link>
 
           {/* Buscador */}

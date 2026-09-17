@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CheckCircle, Truck, MessageSquare } from "lucide-react";
+import Image from "next/image";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -52,17 +53,20 @@ export function CatalogClient({ categories, products }: Props) {
       <section style={{ background: "var(--color-navy)" }}>
         <div className="mx-auto max-w-7xl grid lg:grid-cols-[1fr_auto] items-center gap-8 px-4 py-10 sm:py-12">
           <div>
-            <span
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full"
-              style={{ background: "rgba(245,130,32,.12)", color: "var(--color-accent)" }}
-            >
-              Pedidos por WhatsApp
-            </span>
-            <h1 className="font-display font-extrabold text-[28px] sm:text-[40px] leading-[1.08] uppercase mt-4 text-white">
-              Todo para tu obra,
-              <br />
-              en un solo lugar.
-            </h1>
+            <div className="mb-5">
+              <Image
+                src="/logo-full.png"
+                alt="Asís Materiales"
+                width={320}
+                height={100}
+                className="w-auto"
+                style={{ maxHeight: 90, objectFit: "contain" }}
+                priority
+              />
+            </div>
+            <p className="font-display font-extrabold text-[22px] sm:text-[30px] uppercase tracking-widest text-white/90">
+              Solución en Construcción
+            </p>
             <p className="mt-3 text-[15px] leading-relaxed text-white/55 max-w-lg">
               Consultá materiales, armá tu pedido y coordiná la entrega de manera simple.
             </p>
