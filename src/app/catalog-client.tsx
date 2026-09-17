@@ -57,10 +57,10 @@ export function CatalogClient({ categories, products }: Props) {
               <Image
                 src="/logo-full.png"
                 alt="Asís Materiales"
-                width={480}
-                height={160}
-                className="w-auto"
-                style={{ maxHeight: 140, objectFit: "contain" }}
+                width={420}
+                height={140}
+                className="h-auto w-[280px] sm:w-[420px] max-w-full"
+                style={{ objectFit: "contain" }}
                 priority
               />
             </div>
