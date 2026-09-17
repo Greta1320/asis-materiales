@@ -51,7 +51,7 @@ export function CatalogClient({ categories, products }: Props) {
 
       {/* ── Hero ── */}
       <section style={{ background: "var(--color-navy)" }}>
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1fr_auto] items-center gap-8 px-4 py-10 sm:py-12">
+        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1fr_auto] items-center gap-8 px-4 py-5 sm:py-7">
           <div>
             <div className="mb-6">
               <Image
