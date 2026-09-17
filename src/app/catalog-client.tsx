@@ -55,14 +55,17 @@ export function CatalogClient({ categories, products }: Props) {
           <div>
             <div className="mb-6">
               <Image
-                src="/logo-full.png"
+                src="/logo-asis-only.png"
                 alt="Asís Materiales"
                 width={420}
-                height={140}
-                className="h-auto w-[280px] sm:w-[420px] max-w-full"
+                height={112}
+                className="h-auto w-[260px] sm:w-[380px] max-w-full"
                 style={{ objectFit: "contain" }}
                 priority
               />
+              <p className="mt-1 text-white text-[11px] sm:text-[13px] font-semibold tracking-[0.35em] uppercase opacity-80">
+                Materiales
+              </p>
             </div>
             <p className="font-display font-extrabold text-[22px] sm:text-[30px] uppercase tracking-widest text-white/90">
               Solución en Construcción
