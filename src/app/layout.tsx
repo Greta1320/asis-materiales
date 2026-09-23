@@ -101,7 +101,7 @@ const jsonLd = {
   ],
   priceRange: "$$",
   currenciesAccepted: "ARS",
-  paymentAccepted: "Efectivo, Transferencia, Débito, Mercado Pago",
+  paymentAccepted: "Efectivo, Transferencia, Débito, Crédito, Mercado Pago, Dólares",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
