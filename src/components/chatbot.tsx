@@ -59,6 +59,8 @@ export function Chatbot() {
   const [client, setClient] = useState<ClientInfo | null>(null);
   const [registrationStep, setRegistrationStep] = useState<"idle" | "name" | "localidad" | "done">("idle");
   const [pendingName, setPendingName] = useState("");
+  const [awaitingPhone, setAwaitingPhone] = useState(false);
+  const pendingConsulta = useRef<string>("");
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -129,6 +131,53 @@ export function Chatbot() {
     } catch {}
   }
 
+  function hasRealPhone(c: ClientInfo | null): boolean {
+    return !!c?.phone && !c.phone.startsWith("web_");
+  }
+
+  async function saveConsulta(pregunta: string, telefono: string) {
+    try {
+      const supabase = createClient();
+      await supabase.from("consultas").insert({
+        pregunta,
+        nombre: client?.name || null,
+        telefono,
+        localidad: client?.localidad || null,
+      });
+      if (client && !hasRealPhone(client)) {
+        const updated = { ...client, phone: telefono };
+        setClient(updated);
+        storeClient(updated);
+        await supabase.from("clients").upsert({ ...updated }, { onConflict: "phone" });
+      }
+    } catch {}
+  }
+
+  /** Ask for a phone so Franco can answer, or save straight away if we already have one. */
+  function startConsulta(pregunta: string) {
+    pendingConsulta.current = pregunta;
+
+    if (hasRealPhone(client)) {
+      saveConsulta(pregunta, client!.phone);
+      addMessage({
+        from: "bot",
+        text: "Listo, ya le pasé tu consulta a Franco. Te va a contactar al número que tenemos. 📩",
+        buttons: [
+          { label: "Otra consulta", emoji: "🔄", value: "__menu__" },
+          { label: "Escribir por WhatsApp", emoji: "👷", value: "__whatsapp__" },
+        ],
+      });
+      return;
+    }
+
+    setAwaitingPhone(true);
+    addMessage({
+      from: "bot",
+      text: "¿Me dejás tu número de teléfono así Franco te contacta? 📱\n\nSi preferís, escribinos directo por WhatsApp.",
+      buttons: [{ label: "Mejor por WhatsApp", emoji: "👷", value: "__whatsapp__" }],
+    });
+  }
+
   async function sendToAI(userMessage: string, imageBase64?: string) {
     setTyping(true);
 
@@ -153,11 +202,16 @@ export function Chatbot() {
       addMessage({
         from: "bot",
         text: reply,
-        buttons: [
-          { label: "Otra consulta", emoji: "🔄", value: "__menu__" },
-          { label: "Hablar con asesor", emoji: "👷", value: "__whatsapp__" },
-        ],
+        buttons: data.needsConsulta
+          ? [{ label: "Hablar con asesor", emoji: "👷", value: "__whatsapp__" }]
+          : [
+              { label: "Otra consulta", emoji: "🔄", value: "__menu__" },
+              { label: "Que me contacte Franco", emoji: "📩", value: "__consulta__" },
+              { label: "Hablar con asesor", emoji: "👷", value: "__whatsapp__" },
+            ],
       });
+
+      if (data.needsConsulta) startConsulta(userMessage);
     } catch {
       addMessage({
         from: "bot",
@@ -181,6 +235,12 @@ export function Chatbot() {
       });
       return;
     }
+    if (btn.value === "__consulta__") {
+      const ultima = [...historyRef.current].reverse().find((h) => h.role === "user");
+      addMessage({ from: "user", text: `${btn.emoji} ${btn.label}` });
+      startConsulta(ultima?.text || "El cliente pidió que lo contacten desde el chat.");
+      return;
+    }
     addMessage({ from: "user", text: `${btn.emoji} ${btn.label}` });
     sendToAI(btn.value);
   }
@@ -189,6 +249,30 @@ export function Chatbot() {
     const text = input.trim();
     if (!text) return;
     setInput("");
+
+    if (awaitingPhone) {
+      addMessage({ from: "user", text });
+      const digits = text.replace(/\D/g, "");
+      if (digits.length < 8) {
+        addMessage({
+          from: "bot",
+          text: "Ese número no parece completo. Mandámelo con característica, por ejemplo 2664369625. 📱",
+          buttons: [{ label: "Mejor por WhatsApp", emoji: "👷", value: "__whatsapp__" }],
+        });
+        return;
+      }
+      setAwaitingPhone(false);
+      saveConsulta(pendingConsulta.current, digits);
+      addMessage({
+        from: "bot",
+        text: "¡Gracias! Ya le pasé tu consulta a Franco junto con tu número. Te va a contactar. 📩",
+        buttons: [
+          { label: "Otra consulta", emoji: "🔄", value: "__menu__" },
+          { label: "Escribir por WhatsApp", emoji: "👷", value: "__whatsapp__" },
+        ],
+      });
+      return;
+    }
 
     if (registrationStep === "name") {
       addMessage({ from: "user", text });

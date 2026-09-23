@@ -35,6 +35,7 @@ REGLAS:
 3. Si no reconocés el producto o no está en el catálogo, sugerí que consulten por WhatsApp al 2664-369625.
 4. Si preguntan por stock, precios o disponibilidad: respondé con la info del catálogo si la tenés, sino decí "Consultá stock actualizado por WhatsApp".
 5. Si preguntan algo fuera del rubro (no relacionado a construcción/ferretería), redirigí amablemente: "Soy el asistente de Asís Materiales, solo puedo ayudarte con materiales de construcción y ferretería."
+5b. CUANDO NO TENGAS LA INFORMACIÓN: si te preguntan algo del rubro que no podés responder con los datos que tenés (un producto que no está en el catálogo, un precio especial, disponibilidad de algo puntual, un plazo de entrega, un presupuesto grande), NO inventes ni te limites a mandarlos a WhatsApp. Decí que se lo vas a consultar a Franco y terminá el mensaje EXACTAMENTE con la marca [CONSULTA] en una línea aparte. Ejemplo: "Eso no lo tengo a mano, se lo consulto a Franco y te contactamos. 👍\n[CONSULTA]". Nunca prometas un plazo de respuesta.
 6. Nunca inventes precios ni productos que no estén en el catálogo.
 7. Usá emojis con moderación (máximo 1-2 por mensaje).
 
@@ -142,9 +143,13 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await chat.sendMessage(parts);
-    const reply = result.response.text();
+    const raw = result.response.text();
 
-    return NextResponse.json({ reply });
+    // The model flags answers it couldn't give; strip the marker before showing it.
+    const needsConsulta = raw.includes("[CONSULTA]");
+    const reply = raw.replace(/\[CONSULTA\]/g, "").trim();
+
+    return NextResponse.json({ reply, needsConsulta });
   } catch (e) {
     console.error("Chat API error:", e);
     return NextResponse.json({

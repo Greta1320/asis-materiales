@@ -2,12 +2,22 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Package, Tag, LogOut, Home, Users, Megaphone, BarChart3, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Package, Tag, LogOut, Home, Users, Megaphone, BarChart3, Search, MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { STORE } from "@/lib/config";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const [pendientes, setPendientes] = useState(0);
+
+  useEffect(() => {
+    createClient()
+      .from("consultas")
+      .select("id", { count: "exact", head: true })
+      .eq("estado", "pendiente")
+      .then(({ count }) => setPendientes(count || 0));
+  }, []);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -55,6 +65,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             style={{ color: "rgba(255,255,255,.85)" }}
           >
             <Users className="w-4.5 h-4.5" /> Clientes
+          </Link>
+          <Link
+            href="/admin/consultas"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,.85)" }}
+          >
+            <MessageSquare className="w-4.5 h-4.5" /> Consultas
+            {pendientes > 0 && (
+              <span
+                className="ml-auto min-w-[20px] h-5 px-1.5 rounded-full grid place-items-center text-[11px] font-bold text-white"
+                style={{ background: "var(--color-accent)" }}
+              >
+                {pendientes}
+              </span>
+            )}
           </Link>
           <Link
             href="/admin/promos"
@@ -110,6 +135,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Link>
         <Link href="/admin/clients" className="flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
           <Users className="w-5 h-5" /> Clientes
+        </Link>
+        <Link href="/admin/consultas" className="relative flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
+          <MessageSquare className="w-5 h-5" /> Consultas
+          {pendientes > 0 && (
+            <span
+              className="absolute -top-1 right-1 min-w-[16px] h-4 px-1 rounded-full grid place-items-center text-[10px] font-bold text-white"
+              style={{ background: "var(--color-accent)" }}
+            >
+              {pendientes}
+            </span>
+          )}
         </Link>
         <Link href="/admin/promos" className="flex flex-col items-center text-xs gap-1 no-underline" style={{ color: "rgba(255,255,255,.85)" }}>
           <Megaphone className="w-5 h-5" /> Promos
