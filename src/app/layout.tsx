@@ -57,7 +57,7 @@ const jsonLd = {
   description: "Ferretería y corralón de materiales para la construcción en San Francisco del Monte de Oro, San Luis.",
   url: "https://asismateriales.com",
   telephone: "+54-2664-369625",
-  image: "https://asismateriales.com/og-image.jpg",
+  image: "https://asismateriales.com/logo-full.png",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Centenario s/n",

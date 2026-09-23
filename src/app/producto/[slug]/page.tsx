@@ -6,33 +6,34 @@ import { ChevronRight, Check, X, Truck, MessageSquare } from "lucide-react";
 import { createPublicSupabase } from "@/lib/supabase/public";
 import { STORE, formatPrice } from "@/lib/config";
 import { slugify } from "@/lib/slug";
-import type { Product } from "@/lib/types";
+import { SiteChrome } from "@/components/site-chrome";
+import type { Category, Product } from "@/lib/types";
 
 export const revalidate = 3600;
 
 const SITE = "https://asismateriales.com";
 
-async function getProducts(): Promise<Product[]> {
+async function getData(): Promise<{ products: Product[]; categories: Category[] }> {
   try {
     const supabase = createPublicSupabase();
-    const { data } = await supabase
-      .from("products")
-      .select("*, categories(*)")
-      .order("sort_order");
-    return (data as Product[]) || [];
+    const [{ data: prods }, { data: cats }] = await Promise.all([
+      supabase.from("products").select("*, categories(*)").order("sort_order"),
+      supabase.from("categories").select("*").order("sort_order"),
+    ]);
+    return { products: (prods as Product[]) || [], categories: (cats as Category[]) || [] };
   } catch {
-    return [];
+    return { products: [], categories: [] };
   }
 }
 
 async function findProduct(slug: string) {
-  const products = await getProducts();
+  const { products, categories } = await getData();
   const product = products.find((p) => slugify(p.name) === slug) || null;
-  return { product, products };
+  return { product, products, categories };
 }
 
 export async function generateStaticParams() {
-  const products = await getProducts();
+  const { products } = await getData();
   return products.map((p) => ({ slug: slugify(p.name) }));
 }
 
@@ -73,7 +74,7 @@ export default async function ProductoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { product, products } = await findProduct(slug);
+  const { product, products, categories } = await findProduct(slug);
   if (!product) notFound();
 
   const cat = product.categories?.name || null;
@@ -123,6 +124,7 @@ export default async function ProductoPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
+      <SiteChrome categories={categories}>
       <main className="mx-auto max-w-5xl px-4 py-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm mb-6 flex-wrap" style={{ color: "var(--color-ink-soft)" }}>
@@ -261,6 +263,7 @@ export default async function ProductoPage({
           </section>
         )}
       </main>
+      </SiteChrome>
     </>
   );
 }

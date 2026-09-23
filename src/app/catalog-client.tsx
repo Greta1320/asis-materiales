@@ -194,7 +194,7 @@ export function CatalogClient({ categories, products }: Props) {
       {/* ── Gallery ── */}
       <GallerySection />
 
-      <Footer />
+      <Footer categories={categories} />
 
       {/* Floating & drawers */}
       <WhatsAppFAB onOpenCart={() => setCartOpen(true)} />

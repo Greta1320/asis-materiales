@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { createPublicSupabase } from "@/lib/supabase/public";
 import { STORE, formatPrice } from "@/lib/config";
 import { slugify } from "@/lib/slug";
+import { SiteChrome } from "@/components/site-chrome";
 import type { Category, Product } from "@/lib/types";
 
 export const revalidate = 3600;
@@ -100,6 +101,7 @@ export default async function CategoriaPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
+      <SiteChrome categories={categories}>
       <main className="mx-auto max-w-6xl px-4 py-6">
         <nav className="flex items-center gap-1.5 text-sm mb-5" style={{ color: "var(--color-ink-soft)" }}>
           <Link href="/" className="no-underline hover:underline" style={{ color: "inherit" }}>Inicio</Link>
@@ -167,6 +169,7 @@ export default async function CategoriaPage({
           </section>
         )}
       </main>
+      </SiteChrome>
     </>
   );
 }

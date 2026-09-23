@@ -1,12 +1,15 @@
 import { MapPin, Phone, Clock } from "lucide-react";
+import Link from "next/link";
 import { STORE } from "@/lib/config";
 import { buildGeneralURL } from "@/lib/whatsapp";
+import { slugify } from "@/lib/slug";
+import type { Category } from "@/lib/types";
 import { LogoIcon } from "./logo";
 
-export function Footer() {
+export function Footer({ categories = [] }: { categories?: Category[] }) {
   return (
     <footer id="footer" className="mt-auto" style={{ background: "var(--color-navy)" }}>
-      <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-3 gap-8 px-4 py-10">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4 py-10">
         {/* Marca */}
         <div>
           <div className="flex items-center gap-3 mb-3">
@@ -67,6 +70,26 @@ export function Footer() {
             </a>
           </div>
         </div>
+
+        {/* Categorías */}
+        {categories.length > 0 && (
+          <div>
+            <h4 className="font-display font-bold text-sm uppercase tracking-widest mb-3" style={{ color: "var(--color-accent)" }}>
+              Categorías
+            </h4>
+            <div className="flex flex-col gap-1.5 text-sm">
+              {categories.map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/categoria/${slugify(c.name)}`}
+                  className="no-underline text-white/65 hover:text-white transition-colors"
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Horarios */}
         <div>
