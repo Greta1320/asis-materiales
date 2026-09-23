@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/login"],
       },
     ],
-    sitemap: "https://asismateriales.com/sitemap.xml",
+    sitemap: "https://www.asismateriales.com/sitemap.xml",
   };
 }

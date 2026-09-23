@@ -11,7 +11,7 @@ interface SEOCheck {
   emoji: string;
 }
 
-const SITE_URL = "https://asismateriales.com";
+const SITE_URL = "https://www.asismateriales.com";
 
 function AnimatedScore({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);

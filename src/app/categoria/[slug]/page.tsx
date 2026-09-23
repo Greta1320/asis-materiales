@@ -11,7 +11,7 @@ import type { Category, Product } from "@/lib/types";
 
 export const revalidate = 3600;
 
-const SITE = "https://asismateriales.com";
+const SITE = "https://www.asismateriales.com";
 
 async function getData() {
   try {

@@ -3,7 +3,7 @@ import { createPublicSupabase } from "@/lib/supabase/public";
 import { slugify } from "@/lib/slug";
 import type { Category, Product } from "@/lib/types";
 
-const baseUrl = "https://asismateriales.com";
+const baseUrl = "https://www.asismateriales.com";
 
 export const revalidate = 3600;
 

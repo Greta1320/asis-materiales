@@ -17,7 +17,7 @@ const barlowSC = Barlow_Semi_Condensed({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://asismateriales.com"),
+  metadataBase: new URL("https://www.asismateriales.com"),
   title: {
     default: "Asís Materiales — Ferretería y Corralón en San Francisco del Monte de Oro, San Luis",
     template: "%s | Asís Materiales",
@@ -46,8 +46,12 @@ export const metadata: Metadata = {
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Asís Materiales — Ferretería y Corralón" }],
   },
   alternates: {
-    canonical: "https://asismateriales.com",
+    canonical: "https://www.asismateriales.com",
   },
+  // Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION in Vercel to verify in Search Console
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 const jsonLd = {
@@ -55,9 +59,9 @@ const jsonLd = {
   "@type": "HardwareStore",
   name: "Asís Materiales",
   description: "Ferretería y corralón de materiales para la construcción en San Francisco del Monte de Oro, San Luis.",
-  url: "https://asismateriales.com",
+  url: "https://www.asismateriales.com",
   telephone: "+54-2664-369625",
-  image: "https://asismateriales.com/logo-full.png",
+  image: "https://www.asismateriales.com/logo-full.png",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Centenario s/n",
