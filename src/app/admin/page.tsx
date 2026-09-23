@@ -12,6 +12,7 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
+  const [onlyNoPrice, setOnlyNoPrice] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Modal
@@ -152,9 +153,13 @@ export default function AdminProducts() {
     setEditingPrice(null);
   }
 
-  const filtered = search
-    ? products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-    : products;
+  const sinPrecio = products.filter((p) => !p.price).length;
+
+  const filtered = products.filter((p) => {
+    if (onlyNoPrice && p.price) return false;
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div className="p-4 sm:p-6 max-w-5xl">
@@ -175,21 +180,37 @@ export default function AdminProducts() {
         </button>
       </div>
 
-      {/* Buscador */}
-      <label
-        className="flex items-center gap-2 rounded-xl px-3 mb-4 border max-w-md"
-        style={{ background: "var(--color-surface)", borderColor: "var(--color-line)" }}
-      >
-        <Search className="w-4 h-4 shrink-0" style={{ color: "var(--color-ink-soft)" }} />
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar producto…"
-          className="bg-transparent border-0 outline-none w-full py-2.5 text-sm"
-          style={{ color: "var(--color-ink)" }}
-        />
-      </label>
+      {/* Buscador + filtro */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <label
+          className="flex items-center gap-2 rounded-xl px-3 border flex-1 min-w-[200px] max-w-md"
+          style={{ background: "var(--color-surface)", borderColor: "var(--color-line)" }}
+        >
+          <Search className="w-4 h-4 shrink-0" style={{ color: "var(--color-ink-soft)" }} />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar producto…"
+            className="bg-transparent border-0 outline-none w-full py-2.5 text-sm"
+            style={{ color: "var(--color-ink)" }}
+          />
+        </label>
+
+        {(sinPrecio > 0 || onlyNoPrice) && (
+          <button
+            onClick={() => setOnlyNoPrice(!onlyNoPrice)}
+            className="rounded-xl px-4 py-2.5 text-sm font-bold border-2 whitespace-nowrap transition-colors"
+            style={
+              onlyNoPrice
+                ? { background: "var(--color-accent)", borderColor: "var(--color-accent)", color: "#fff" }
+                : { background: "var(--color-surface)", borderColor: "var(--color-line-strong)", color: "var(--color-ink)" }
+            }
+          >
+            {onlyNoPrice ? "Ver todos" : `Sin precio (${sinPrecio})`}
+          </button>
+        )}
+      </div>
 
       {/* Lista */}
       {loading ? (
@@ -201,6 +222,8 @@ export default function AdminProducts() {
         >
           {products.length === 0
             ? "Todavía no hay productos. Tocá \"Nuevo producto\" para empezar."
+            : onlyNoPrice && sinPrecio === 0
+            ? "¡Listo! Todos los productos tienen precio cargado."
             : "No se encontraron resultados."}
         </div>
       ) : (
