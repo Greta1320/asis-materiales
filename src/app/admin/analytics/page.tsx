@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Eye, TrendingUp, Globe, Smartphone, Monitor, Users, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Eye, TrendingUp, Globe, Smartphone, Monitor, Users, ArrowUpRight, ArrowDownRight, ShoppingCart, Package, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { formatPrice } from "@/lib/config";
 
 interface DayStat { date: string; count: number }
 interface PageStat { path: string; count: number }
+interface OrderItem { qty: number; name: string; unit: string; price: number }
+interface Order { id: string; items: OrderItem[]; total: number; created_at: string }
+interface ProductStat { name: string; qty: number; unit: string; revenue: number }
 
 function AnimatedNumber({ value, duration = 1200 }: { value: number; duration?: number }) {
   const [display, setDisplay] = useState(0);
@@ -70,6 +74,7 @@ export default function AdminAnalytics() {
   const [desktopPct, setDesktopPct] = useState(0);
   const [dailyStats, setDailyStats] = useState<DayStat[]>([]);
   const [topPages, setTopPages] = useState<PageStat[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [show, setShow] = useState(false);
 
   useEffect(() => { loadStats(); }, []);
@@ -129,6 +134,12 @@ export default function AdminAnalytics() {
       );
     }
 
+    const { data: orderRows } = await supabase
+      .from("orders")
+      .select("id, items, total, created_at")
+      .order("created_at", { ascending: false });
+    setOrders((orderRows as Order[]) || []);
+
     setLoading(false);
     setTimeout(() => setShow(true), 50);
   }
@@ -138,6 +149,23 @@ export default function AdminAnalytics() {
   const mobilePct = 100 - desktopPct;
 
   const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+  const facturado = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const ticketPromedio = orders.length ? Math.round(facturado / orders.length) : 0;
+
+  const topProductos: ProductStat[] = Object.values(
+    orders.reduce((acc: Record<string, ProductStat>, o) => {
+      (o.items || []).forEach((it) => {
+        const k = it.name;
+        if (!acc[k]) acc[k] = { name: it.name, qty: 0, unit: it.unit, revenue: 0 };
+        acc[k].qty += it.qty || 0;
+        acc[k].revenue += (it.qty || 0) * (it.price || 0);
+      });
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b.qty - a.qty)
+    .slice(0, 8);
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
@@ -222,6 +250,28 @@ export default function AdminAnalytics() {
               <p className="text-white/70 text-xs font-medium uppercase tracking-wider">Total histórico</p>
               <p className="font-display font-bold text-3xl text-white mt-1 tabular-nums"><AnimatedNumber value={total} /></p>
               <p className="text-white/50 text-[10px] mt-1">desde que se activó</p>
+            </div>
+          </div>
+
+          {/* Pedidos — KPIs de venta */}
+          <div className={`grid grid-cols-3 gap-3 mb-6 ${show ? "" : "opacity-0"}`}>
+            <div className="fade-up fade-up-2 rounded-2xl p-4" style={{ background: "var(--color-surface)", border: "1px solid var(--color-line)" }}>
+              <ShoppingCart className="w-5 h-5 mb-2" style={{ color: "var(--color-accent)" }} />
+              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--color-ink-soft)" }}>Pedidos</p>
+              <p className="font-display font-bold text-3xl mt-1 tabular-nums"><AnimatedNumber value={orders.length} /></p>
+              <p className="text-[10px] mt-1" style={{ color: "var(--color-ink-soft)" }}>enviados por WhatsApp</p>
+            </div>
+            <div className="fade-up fade-up-3 rounded-2xl p-4" style={{ background: "var(--color-surface)", border: "1px solid var(--color-line)" }}>
+              <Receipt className="w-5 h-5 mb-2" style={{ color: "#22c55e" }} />
+              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--color-ink-soft)" }}>Facturado</p>
+              <p className="font-display font-bold text-2xl mt-1 tabular-nums whitespace-nowrap">{formatPrice(facturado)}</p>
+              <p className="text-[10px] mt-1" style={{ color: "var(--color-ink-soft)" }}>suma de los pedidos</p>
+            </div>
+            <div className="fade-up fade-up-4 rounded-2xl p-4" style={{ background: "var(--color-surface)", border: "1px solid var(--color-line)" }}>
+              <Package className="w-5 h-5 mb-2" style={{ color: "#8b5cf6" }} />
+              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--color-ink-soft)" }}>Ticket promedio</p>
+              <p className="font-display font-bold text-2xl mt-1 tabular-nums whitespace-nowrap">{formatPrice(ticketPromedio)}</p>
+              <p className="text-[10px] mt-1" style={{ color: "var(--color-ink-soft)" }}>por pedido</p>
             </div>
           </div>
 
@@ -344,6 +394,68 @@ export default function AdminAnalytics() {
               </div>
             )}
           </div>
+
+          {/* Lo más pedido */}
+          <div className={`fade-up fade-up-6 rounded-2xl p-4 mt-4 ${show ? "" : "opacity-0"}`} style={{ background: "var(--color-surface)", border: "1px solid var(--color-line)" }}>
+            <p className="font-semibold text-sm">Lo más pedido</p>
+            <p className="text-xs mb-4" style={{ color: "var(--color-ink-soft)" }}>Qué se llevan tus clientes, de todos los pedidos</p>
+            {topProductos.length === 0 ? (
+              <p className="text-sm py-6 text-center" style={{ color: "var(--color-ink-soft)" }}>
+                Todavía no hay pedidos. Cuando alguien mande uno por WhatsApp aparece acá.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {topProductos.map((p, i) => {
+                  const barPct = topProductos[0].qty > 0 ? (p.qty / topProductos[0].qty) * 100 : 0;
+                  const medals = ["🥇", "🥈", "🥉"];
+                  return (
+                    <div key={p.name} className="relative rounded-xl overflow-hidden px-4 py-3" style={{ background: "var(--color-surface-2)" }}>
+                      <div
+                        className="absolute inset-y-0 left-0 rounded-xl"
+                        style={{ width: `${barPct}%`, background: i === 0 ? "rgba(245,130,32,.15)" : "rgba(245,130,32,.07)", transition: "width 1s ease" }}
+                      />
+                      <div className="relative flex items-center gap-3">
+                        <span className="text-lg shrink-0">{medals[i] || `#${i + 1}`}</span>
+                        <span className="flex-1 text-sm font-medium truncate">{p.name}</span>
+                        <span className="text-xs whitespace-nowrap hidden sm:inline" style={{ color: "var(--color-ink-soft)" }}>
+                          {formatPrice(p.revenue)}
+                        </span>
+                        <span className="font-display font-bold text-lg tabular-nums" style={{ color: "var(--color-accent)" }}>
+                          <AnimatedNumber value={p.qty} duration={800} />
+                        </span>
+                        <span className="text-xs whitespace-nowrap" style={{ color: "var(--color-ink-soft)" }}>{p.unit}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Últimos pedidos */}
+          {orders.length > 0 && (
+            <div className={`fade-up fade-up-6 rounded-2xl p-4 mt-4 ${show ? "" : "opacity-0"}`} style={{ background: "var(--color-surface)", border: "1px solid var(--color-line)" }}>
+              <p className="font-semibold text-sm">Últimos pedidos</p>
+              <p className="text-xs mb-4" style={{ color: "var(--color-ink-soft)" }}>Lo que armó cada cliente antes de mandarlo</p>
+              <div className="flex flex-col gap-2">
+                {orders.slice(0, 8).map((o) => (
+                  <div key={o.id} className="rounded-xl px-4 py-3" style={{ background: "var(--color-surface-2)" }}>
+                    <div className="flex items-baseline justify-between gap-3 mb-1.5">
+                      <span className="text-xs" style={{ color: "var(--color-ink-soft)" }}>
+                        {new Date(o.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                      <span className="font-display font-bold tabular-nums" style={{ color: "var(--color-accent)" }}>
+                        {formatPrice(o.total)}
+                      </span>
+                    </div>
+                    <p className="text-sm leading-snug">
+                      {(o.items || []).map((it) => `${it.qty}× ${it.name}`).join(" · ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
