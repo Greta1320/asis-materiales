@@ -17,6 +17,7 @@ const barlowSC = Barlow_Semi_Condensed({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://asismateriales.com"),
   title: {
     default: "Asís Materiales — Ferretería y Corralón en San Francisco del Monte de Oro, San Luis",
     template: "%s | Asís Materiales",

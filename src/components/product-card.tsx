@@ -2,15 +2,18 @@
 
 import { Plus, Check } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/config";
 import { buildInquiryURL } from "@/lib/whatsapp";
+import { slugify } from "@/lib/slug";
 
 export function ProductCard({ product }: { product: Product }) {
   const { add, getQty } = useCart();
   const qty = getQty(product.id);
   const categoryName = product.categories?.name || "General";
+  const href = `/producto/${slugify(product.name)}`;
 
   return (
     <article
@@ -22,19 +25,19 @@ export function ProductCard({ product }: { product: Product }) {
     >
       {/* Image — normalized container for varied product photos */}
       <div className="aspect-[4/3] relative overflow-hidden" style={{ background: "var(--color-surface-2)" }}>
-        {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            className="object-contain p-3"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl opacity-30">📦</span>
-          </div>
-        )}
+        <Link href={href} className="absolute inset-0 z-[1]" aria-label={product.name}>
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-contain p-3"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          ) : (
+            <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-30">📦</span>
+          )}
+        </Link>
         <span
           className="absolute top-2 left-2 z-10 text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded"
           style={{ background: "var(--color-navy)", color: "#fff" }}
@@ -53,11 +56,10 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Body */}
       <div className="flex flex-col p-4 flex-1">
-        <h3
-          className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]"
-          style={{ color: "var(--color-ink)" }}
-        >
-          {product.name}
+        <h3 className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
+          <Link href={href} className="no-underline hover:underline" style={{ color: "var(--color-ink)" }}>
+            {product.name}
+          </Link>
         </h3>
 
         <div className="mt-auto pt-3">

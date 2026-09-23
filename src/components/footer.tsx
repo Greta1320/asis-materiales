@@ -84,8 +84,24 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t text-center text-xs py-3 text-white/40" style={{ borderColor: "rgba(255,255,255,.1)" }}>
-        {STORE.name} © {new Date().getFullYear()} — Todos los derechos reservados
+      <div
+        className="border-t flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 text-center text-xs py-4 text-white/40"
+        style={{ borderColor: "rgba(255,255,255,.1)" }}
+      >
+        <span>{STORE.name} © {new Date().getFullYear()} — Todos los derechos reservados</span>
+        <span className="hidden sm:inline text-white/20">|</span>
+        <span>
+          Desarrollado por{" "}
+          <a
+            href="https://www.skyeleven.com.ar/"
+            target="_blank"
+            rel="noopener"
+            className="font-bold no-underline transition-colors hover:brightness-125"
+            style={{ color: "var(--color-accent)" }}
+          >
+            Skyeleven
+          </a>
+        </span>
       </div>
     </footer>
   );
