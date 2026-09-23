@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Image as ImageIcon, Search, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Copy, Image as ImageIcon, Search, Check, X } from "lucide-react";
 import NextImage from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/config";
@@ -27,6 +27,7 @@ export default function AdminProducts() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [sourceImageUrl, setSourceImageUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editingPrice, setEditingPrice] = useState<string | null>(null);
   const [priceValue, setPriceValue] = useState("");
@@ -49,6 +50,7 @@ export default function AdminProducts() {
     setForm({ name: "", price: "", unit: "unidad", category_id: categories[0]?.id || "", in_stock: true, featured: false });
     setFile(null);
     setPreview(null);
+    setSourceImageUrl(null);
     setModal(true);
   }
 
@@ -64,6 +66,23 @@ export default function AdminProducts() {
     });
     setFile(null);
     setPreview(p.image_url);
+    setSourceImageUrl(p.image_url);
+    setModal(true);
+  }
+
+  function openDuplicate(p: Product) {
+    setEditing(null);
+    setForm({
+      name: p.name,
+      price: String(p.price),
+      unit: p.unit,
+      category_id: p.category_id || "",
+      in_stock: p.in_stock,
+      featured: p.featured,
+    });
+    setFile(null);
+    setPreview(p.image_url);
+    setSourceImageUrl(p.image_url);
     setModal(true);
   }
 
@@ -71,7 +90,7 @@ export default function AdminProducts() {
     if (!form.name || !form.price) return alert("Completá nombre y precio.");
     setSaving(true);
 
-    let image_url = editing?.image_url || null;
+    let image_url = sourceImageUrl;
 
     // Subir foto si hay una nueva
     if (file) {
@@ -194,7 +213,7 @@ export default function AdminProducts() {
                   <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--color-ink-soft)" }}>Precio</th>
                   <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider hidden sm:table-cell" style={{ color: "var(--color-ink-soft)" }}>Categoría</th>
                   <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider hidden sm:table-cell" style={{ color: "var(--color-ink-soft)" }}>Stock</th>
-                  <th className="px-4 py-3 w-20"></th>
+                  <th className="px-4 py-3 w-28"></th>
                 </tr>
               </thead>
               <tbody>
@@ -281,6 +300,14 @@ export default function AdminProducts() {
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
+                          onClick={() => openDuplicate(p)}
+                          className="w-8 h-8 rounded-lg grid place-items-center border-0"
+                          style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}
+                          title="Duplicar (misma foto, otro nombre)"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(p.id)}
                           className="w-8 h-8 rounded-lg grid place-items-center border-0"
                           style={{ background: "var(--color-surface-2)", color: "#dc3232" }}
@@ -308,7 +335,7 @@ export default function AdminProducts() {
           >
             <header className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--color-line)" }}>
               <h3 className="font-display font-bold text-lg uppercase">
-                {editing ? "Editar producto" : "Nuevo producto"}
+                {editing ? "Editar producto" : sourceImageUrl ? "Duplicar producto" : "Nuevo producto"}
               </h3>
               <button
                 onClick={() => setModal(false)}
@@ -421,7 +448,7 @@ export default function AdminProducts() {
                 className="w-full rounded-xl py-3 font-bold text-sm uppercase tracking-wide border-0 transition-opacity disabled:opacity-50"
                 style={{ background: "var(--color-brand)", color: "var(--color-brand-ink)" }}
               >
-                {saving ? "Guardando…" : editing ? "Guardar cambios" : "Crear producto"}
+                {saving ? "Guardando…" : editing ? "Guardar cambios" : sourceImageUrl ? "Crear copia" : "Crear producto"}
               </button>
             </div>
           </div>
